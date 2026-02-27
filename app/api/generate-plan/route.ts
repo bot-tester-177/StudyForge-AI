@@ -1,36 +1,17 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server'
 import { OpenAI } from "openai"
-import { calculateDaysLeft } from "../../utils/dateCalculator"
-
-// request/response types for clarity
-interface PlanRequest {
-  className: string
-  examDate: string
-  topics: string[]
-}
-
-interface PlanResponse {
-  plan: string
-}
+import { calculateDaysLeft } from "../../../utils/dateCalculator"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<PlanResponse | { error: string }>
-) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST")
-    return res.status(405).json({ error: "Method not allowed" })
-  }
-
+export async function POST(req: Request) {
   try {
-    const { className, examDate, topics } = req.body as PlanRequest
+    const { className, examDate, topics } = await req.json()
 
     if (!className || !examDate || !topics || !Array.isArray(topics)) {
-      return res.status(400).json({ error: "Missing required fields" })
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
     const daysLeft = calculateDaysLeft(examDate)
@@ -58,9 +39,9 @@ Be extremely structured.
     })
 
     const plan = completion.choices?.[0]?.message?.content ?? ""
-    res.status(200).json({ plan })
+    return NextResponse.json({ plan })
   } catch (error) {
     console.error("generate-plan error", error)
-    res.status(500).json({ error: "Internal server error" })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
