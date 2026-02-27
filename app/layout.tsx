@@ -1,6 +1,4 @@
 // app/layout.tsx
-import './globals.css' // optional, if you have global styles
-
 export const metadata = {
   title: 'StudyForge AI',
   description: 'AI Study Roadmap Generator',
