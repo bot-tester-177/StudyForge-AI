@@ -1,7 +1,7 @@
 // app/layout.tsx
 export const metadata = {
   title: 'StudyForge AI',
-  description: 'AI Study Roadmap Generator',
+  description: 'AI-Powered Study Roadmap Generator',
 }
 
 export default function RootLayout({
